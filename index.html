@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+    <title>圖片壓縮工具</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <button class="theme-toggle" id="themeToggle" aria-label="切換主題">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <h1><i class="fas fa-compress-alt"></i> 圖片壓縮工具</h1>
+            <p class="tagline">簡單三步驟，快速壓縮圖片</p>
+        </header>
+
+        <!-- 步驟式工作流程 -->
+        <div class="workflow">
+
+            <!-- 步驟 1: 上傳圖片 -->
+            <div class="workflow-step active" data-step="1">
+                <div class="step-header">
+                    <div class="step-indicator">
+                        <span class="step-number">1</span>
+                        <div class="step-info">
+                            <h3>上傳圖片</h3>
+                            <p class="step-desc">選擇要壓縮的圖片檔案</p>
+                        </div>
+                    </div>
+                    <div class="step-status">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+
+                <div class="step-content">
+                    <div class="upload-zone" id="uploadZone">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3>拖放圖片到這裡</h3>
+                        <p>或</p>
+                        <label for="imageInput" class="upload-btn">
+                            <i class="fas fa-folder-open"></i> 選擇檔案
+                        </label>
+                        <input type="file" id="imageInput" accept="image/*" hidden>
+                        <p class="upload-hint">支援 JPG、PNG、WebP 格式</p>
+                    </div>
+
+                    <!-- 已上傳圖片預覽 -->
+                    <div class="uploaded-preview" id="uploadedPreview" style="display: none;">
+                        <div class="preview-header">
+                            <div class="file-info">
+                                <i class="fas fa-file-image"></i>
+                                <div>
+                                    <p class="file-name" id="fileName">image.jpg</p>
+                                    <p class="file-size" id="fileSize">2.5 MB</p>
+                                </div>
+                            </div>
+                            <button class="btn-text" id="changeFileBtn">
+                                <i class="fas fa-sync-alt"></i> 更換圖片
+                            </button>
+                        </div>
+                        <div class="preview-image-container">
+                            <img id="previewImage" src="" alt="預覽圖">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步驟 2: 調整設定 -->
+            <div class="workflow-step" data-step="2">
+                <div class="step-header">
+                    <div class="step-indicator">
+                        <span class="step-number">2</span>
+                        <div class="step-info">
+                            <h3>調整設定</h3>
+                            <p class="step-desc">選擇壓縮程度或進行裁切（可選）</p>
+                        </div>
+                    </div>
+                    <div class="step-status">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+
+                <div class="step-content">
+                    <!-- 裁切功能（可選） -->
+                    <details class="crop-settings" id="cropSettings">
+                        <summary>
+                            <i class="fas fa-crop-alt"></i> 裁切圖片（可選）
+                        </summary>
+                        <div class="crop-content">
+                            <div class="crop-container">
+                                <div class="cropper-wrapper" id="cropperWrapper">
+                                    <img id="cropperImage" src="" alt="裁切預覽">
+                                </div>
+                            </div>
+                            <div class="crop-actions">
+                                <button class="btn-secondary" id="cropButton">
+                                    <i class="fas fa-check"></i> 確認裁切
+                                </button>
+                                <button class="btn-text" id="resetCropButton">
+                                    <i class="fas fa-undo"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- 壓縮設定 -->
+                    <div class="compress-panel">
+                        <div class="setting-group">
+                            <label class="setting-label">
+                                <i class="fas fa-sliders-h"></i> 壓縮程度
+                            </label>
+                            <div class="quality-selector">
+                                <div class="preset-buttons">
+                                    <button class="preset-btn" data-quality="60">
+                                        <span class="preset-name">高壓縮</span>
+                                        <span class="preset-desc">檔案最小</span>
+                                    </button>
+                                    <button class="preset-btn active" data-quality="80">
+                                        <span class="preset-name">推薦</span>
+                                        <span class="preset-desc">品質與大小平衡</span>
+                                    </button>
+                                    <button class="preset-btn" data-quality="95">
+                                        <span class="preset-name">高品質</span>
+                                        <span class="preset-desc">接近原圖</span>
+                                    </button>
+                                </div>
+                                <div class="quality-slider-container">
+                                    <input type="range" id="quality" min="1" max="100" value="80" class="quality-slider">
+                                    <div class="quality-value-display">
+                                        <span id="qualityValue">80</span>%
+                                        <span id="qualityHint" class="quality-hint">平衡（推薦）</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 進階設定（收起） -->
+                        <details class="advanced-settings">
+                            <summary>
+                                <i class="fas fa-cog"></i> 進階設定
+                            </summary>
+                            <div class="advanced-content">
+                                <div class="setting-row">
+                                    <label for="outputFormat">
+                                        <i class="fas fa-file-image"></i> 輸出格式
+                                    </label>
+                                    <select id="outputFormat" class="select-input">
+                                        <option value="jpeg">JPEG</option>
+                                        <option value="png">PNG</option>
+                                        <option value="webp">WebP</option>
+                                    </select>
+                                </div>
+
+                                <div class="setting-row">
+                                    <label>
+                                        <i class="fas fa-water"></i> 浮水印
+                                    </label>
+                                    <div class="watermark-group">
+                                        <label class="switch">
+                                            <input type="checkbox" id="watermarkEnabled">
+                                            <span class="slider"></span>
+                                        </label>
+                                        <input type="text" id="watermarkText" class="text-input" placeholder="輸入浮水印文字" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <button class="primary-btn" id="compressButton">
+                            <i class="fas fa-compress"></i> 開始壓縮
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步驟 3: 下載結果 -->
+            <div class="workflow-step" data-step="3">
+                <div class="step-header">
+                    <div class="step-indicator">
+                        <span class="step-number">3</span>
+                        <div class="step-info">
+                            <h3>下載結果</h3>
+                            <p class="step-desc">預覽壓縮效果並下載</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-content">
+                    <!-- 壓縮統計 -->
+                    <div class="compression-stats">
+                        <div class="stat-card highlight">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="compressionRate">-67%</span>
+                                <span class="stat-label">檔案縮小</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-save"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="sizeSaved">2.1 MB</span>
+                                <span class="stat-label">節省空間</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <span class="stat-number" id="sizeComparison">3.2MB → 1.1MB</span>
+                                <span class="stat-label">檔案大小</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 圖片對比 -->
+                    <div class="comparison-view">
+                        <div class="comparison-image">
+                            <div class="image-label">壓縮前</div>
+                            <div id="originalContainer" class="image-container">
+                                <img id="originalImage" src="" alt="原圖">
+                            </div>
+                            <p class="image-info" id="originalInfo"></p>
+                        </div>
+                        <div class="comparison-divider">
+                            <i class="fas fa-arrows-alt-h"></i>
+                        </div>
+                        <div class="comparison-image">
+                            <div class="image-label success">壓縮後</div>
+                            <div id="compressedContainer" class="image-container">
+                                <img id="compressedImage" src="" alt="壓縮圖">
+                            </div>
+                            <p class="image-info" id="compressedInfo"></p>
+                        </div>
+                    </div>
+
+                    <!-- 下載按鈕 -->
+                    <div class="download-actions">
+                        <a id="downloadLink" class="download-btn" download="compressed-image">
+                            <i class="fas fa-download"></i> 下載壓縮圖片
+                        </a>
+                        <button class="btn-secondary" id="restartBtn">
+                            <i class="fas fa-redo"></i> 壓縮其他圖片
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 圖片壓縮工具 | 純前端處理，保護您的隱私 | AI Coding By <a href="mailto:tznthou@gmail.com">子超</a></p>
+        </footer>
+    </div>
+
+    <!-- 載入提示 -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>壓縮中...</p>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
