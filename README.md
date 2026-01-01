@@ -1,4 +1,4 @@
-# 圖片壓縮工具
+# Compress 圖片壓縮工具
 
 > 純前端圖片壓縮工具，支援裁切、浮水印、多格式輸出。所有處理皆在瀏覽器完成，保護您的隱私。
 
@@ -7,7 +7,7 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![Cropper.js](https://img.shields.io/badge/Cropper.js-v1.5.13-green)
 
-[← 回到 Muripo HQ](https://tznthou.github.io/muripo-hq/)
+[← 回到 Muripo HQ](https://tznthou.github.io/muripo-hq/) | [English](README_EN.md)
 ## 功能特色
 
 - **圖片壓縮** - 支援 JPEG、PNG、WebP 格式輸出
